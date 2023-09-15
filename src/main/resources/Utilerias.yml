@@ -1,0 +1,8 @@
+---
+funciones:
+  - schema: DEVELOPER
+    llaveFuncion: GET_ALL_CIUDADES
+    nombreFuncion: PKG_CIUDADES.FN_OBTENER_CIUDADES(?,?)
+    resultado:
+      idCiudad: IDCIUDAD
+      descripcion: CIUDAD
