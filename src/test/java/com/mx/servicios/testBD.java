@@ -1,5 +1,6 @@
 package com.mx.servicios;
 
+import com.mx.servicios.utils.log.LogCC;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class testBD {
 
-
   private DataSource dataSource;
 
   @Autowired
@@ -26,18 +26,15 @@ public class testBD {
   @Test
   public void testDatabaseConnection() {
     try (Connection connection = dataSource.getConnection()) {
-      // Si llegamos aquí sin lanzar una excepción, la conexión fue exitosa.
       String sql = "SELECT 1 FROM DUAL";
       try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
         ResultSet resultSet = preparedStatement.executeQuery();
-
-        // Verificar si la consulta se ejecutó correctamente y si devuelve resultados
-        assertTrue(resultSet.next()); // assertTrue verifica que haya al menos una fila en el resultado
-        int resultValue = resultSet.getInt(1); // Obtenemos el valor de la primera columna
-        System.out.println("SALIDA + " + resultValue);
-        assertTrue(resultValue == 1); // Verificamos que el valor sea igual a 1
+        assertTrue(resultSet.next());
+        int resultValue = resultSet.getInt(1);
+        LogCC.log("SALIDA + " + resultValue);
+        assertTrue(resultValue == 1);
       }
-      System.out.println("Conexión exitosa a la base de datos.");
+      LogCC.log("Conexión exitosa a la base de datos.");
     }
     catch (SQLException e) {
       e.printStackTrace();

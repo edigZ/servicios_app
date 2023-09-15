@@ -17,7 +17,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("/v1")
-@Tag(name = "PruebaController", description = "contiene controladores de prueba dos partes")
+@Tag(name = "Ciudades", description = "Contiene los metodos para la informacion de ciudadez")
 public class CiudadesController {
   private final GetCiudadesBase getCiudadesBase;
 
@@ -27,16 +27,14 @@ public class CiudadesController {
   }
 
   @Operation(summary = "Obtiene todas las ciudades desde la base")
-  @GetMapping(value = "/obtener-ciudades")
+  @GetMapping(value = "/all-ciudades")
   public List<Ciudad> obtenerDatosDePrueba() {
     try {
-      return (List<Ciudad>) getCiudadesBase.listaCiudad();
+      return getCiudadesBase.listaCiudad();
     }
     catch (Exception e) {
       e.printStackTrace();
       return null;
     }
   }
-
-
 }

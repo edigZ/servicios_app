@@ -99,14 +99,10 @@ public class ResultadoBD {
 
   public CallableStatement cargaParametros(CallableStatement callableStatement,
                                            ArrayList<? extends Object> parametros) {
-    // de inicia en porque CallableStatement la primer pocision corresponde al
-    // cursor de salida.
     int posicion = 2;
     try {
       callableStatement.registerOutParameter(1, -10);
-
       for (Object parametro : parametros) {
-
         callableStatement.setObject(posicion, parametro);
         posicion++;
       }
