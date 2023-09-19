@@ -1,36 +1,41 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.0.4'
-	id 'io.spring.dependency-management' version '1.1.3'
+    id 'java'
+    id 'org.springframework.boot' version '3.0.4'
+    id 'io.spring.dependency-management' version '1.1.3'
 }
 
 group = 'com.mx'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = '17'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    //librerias base de spring boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    compileOnly("org.springframework.boot:spring-boot-devtools")
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
-	implementation 'org.springframework.boot:spring-boot-starter-validation:3.0.4'
+    //librerias para swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.0.4'
 
-	compileOnly("org.springframework.boot:spring-boot-devtools")
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    //librerias para base de datos
+    implementation 'com.oracle.database.jdbc:ojdbc8:21.3.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.1.3'
 
-	implementation 'com.oracle.database.jdbc:ojdbc8:21.3.0.0'
-	//implementation 'org.apache.logging.log4j:log4j:2.20.0'
-
+    //libreria para log y archivos json
+    implementation 'org.apache.logging.log4j:log4j:2.20.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
