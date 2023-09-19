@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ResultadoBD {
+
   @Autowired
   protected JdbcTemplate jdbcTemplate;
 
@@ -37,7 +38,7 @@ public class ResultadoBD {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  public List<? extends Object> ejecutaFuncionAll(String nombreFuncion, final ArrayList<Object> parametros,
+  public List<? extends Object> ejecutaFuncionAll(String nombreFuncion, final List<Object> parametros,
                                                   final Class<?> clase) {
     FuncionesSistema funcionesSistema = FuncionesSistema.getInstance();
     List<Object> resultado = new ArrayList<>();
@@ -55,10 +56,16 @@ public class ResultadoBD {
         cs.execute();
         ResultSet resultSet = (ResultSet) cs.getObject(1);
         cronometro.stop();
-        return obtenerresultadoAll(resultSet, funcion, clase);
+        if (resultSet == null) {
+          return null;
+        }
+        else {
+          return obtenerresultadoAll(resultSet, funcion, clase);
+        }
       });
     }
     catch (Exception ex) {
+      ex.printStackTrace();
       LogCC.logDegug(ex);
       LogCC.log("Fallo en ejecutaFuncionAll");
     }
@@ -98,7 +105,7 @@ public class ResultadoBD {
   }
 
   public CallableStatement cargaParametros(CallableStatement callableStatement,
-                                           ArrayList<? extends Object> parametros) {
+                                           List<Object> parametros) {
     int posicion = 2;
     try {
       callableStatement.registerOutParameter(1, -10);
