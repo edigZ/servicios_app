@@ -10,6 +10,8 @@ public class ResponseBase {
   @JsonIgnore
   private HttpStatus httpStatus;
 
+  private Object resultado;
+
   /**
    * Constructor vacio
    */
@@ -17,17 +19,6 @@ public class ResponseBase {
     /**
      * Constructor vacio
      */
-  }
-
-  /**
-   * Metodo para evitar mas returns
-   *
-   * @param codigo
-   */
-  public ResponseBase(CodigoResponse codigo, String folio) {
-    this.codigo = codigo.getCodigo();
-    this.mensaje = codigo.getDescripcion();
-    this.folio = folio;
   }
 
   /**
@@ -93,5 +84,13 @@ public class ResponseBase {
    */
   public void setHttpStatus(HttpStatus httpStatus) {
     this.httpStatus = httpStatus;
+  }
+
+  public Object getResultado() {
+    return resultado;
+  }
+
+  public void setResultado(Object resultado) {
+    this.resultado = resultado;
   }
 }

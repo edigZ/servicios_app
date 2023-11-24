@@ -2,6 +2,7 @@ package com.mx.servicios.utils.constantes;
 
 public class Generales {
   public static final String CODIGO_APP = "011";
+  public static final String CALL = "{? = call";
 
   private Generales() {
     /**

@@ -7,3 +7,9 @@ funciones:
       idCiudad: IDCIUDAD
       descripcion: CIUDAD
 
+  - schema: DEVELOPER
+    llaveFuncion: SET_CIUDADES
+    nombreFuncion: PKG_CIUDADES.FN_INSERTAR_CIUDAD(?,?)
+    resultado:
+      id: RESULTADO
+      descripcion: MENSAJE

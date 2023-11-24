@@ -2,7 +2,7 @@ package com.mx.servicios.config;
 
 import com.mx.servicios.utils.response.CodigoResponse;
 
-import com.mx.servicios.utils.response.Response;
+import com.mx.servicios.utils.response.ResponseBase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,9 +15,9 @@ import java.util.List;
 public class ControllerAdvisor {
 
   @ExceptionHandler(Exception.class)
-  public final ResponseEntity<Response> handleAllExceptions(Throwable ex) {
+  public final ResponseEntity<ResponseBase> handleAllExceptions(Throwable ex) {
 
-    var respuesta = new Response();
+    var respuesta = new ResponseBase();
 
     List<Object> listDetalles = new ArrayList<>();
     listDetalles.add(ex.getMessage());

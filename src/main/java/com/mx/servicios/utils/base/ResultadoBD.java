@@ -10,11 +10,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
+import java.util.Locale;
 
 
 import com.mx.servicios.utils.log.Cronometro;
@@ -27,63 +27,59 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResultadoBD {
 
+  private JdbcTemplate jdbcTemplate;
+
   @Autowired
-  protected JdbcTemplate jdbcTemplate;
-
-  public ResultadoBD() {
-
-  }
-
   public ResultadoBD(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  public List<? extends Object> ejecutaFuncionAll(String nombreFuncion, final List<Object> parametros,
-                                                  final Class<?> clase) {
+
+  public List<?> ejecutaFuncionAll(String nombreFuncion, final List<Object> parametros, final Class<?> clase) {
     FuncionesSistema funcionesSistema = FuncionesSistema.getInstance();
-    List<Object> resultado = new ArrayList<>();
+    List<Object> resultados = new ArrayList<>();
     final Funcion funcion = funcionesSistema.obtenerFuncion(nombreFuncion);
-    String msgFuncion = "CALL " + funcion.getSchema() + "." + funcion.getNombreFuncion().split("\\(")[0] + "("
-            + Arrays.toString(parametros.toArray()) + ")";
+    String msgFuncion = "CALL " + funcion.getSchema() + "." + funcion.getNombreFuncion().split("\\(")[0] + "(" +
+            Arrays.toString(parametros.toArray()) + ")";
+
     Cronometro cronometro = new Cronometro(true, msgFuncion);
 
     try {
-      resultado = jdbcTemplate.execute(con -> {
-        CallableStatement callableStatement = con
-                .prepareCall("{? = call " + funcion.getSchema() + "." + funcion.getNombreFuncion() + "}");
-        return cargaParametros(callableStatement, parametros);
-      }, (CallableStatementCallback<List<Object>>) cs -> {
-        cs.execute();
-        ResultSet resultSet = (ResultSet) cs.getObject(1);
-        cronometro.stop();
-        if (resultSet == null) {
-          return null;
-        }
-        else {
-          return obtenerresultadoAll(resultSet, funcion, clase);
-        }
-      });
+      resultados = jdbcTemplate.execute(con -> {
+                CallableStatement callableStatement = con.prepareCall("{? = call " + funcion.getSchema() + "." +
+                        funcion.getNombreFuncion() + " }");
+                return cargaParametros(callableStatement, parametros);
+              },
+              (CallableStatementCallback<List<Object>>) cs -> {
+                cs.execute();
+                ResultSet resultSet = (ResultSet) cs.getObject(1);
+                cronometro.stop();
+                if (resultSet == null) {
+                  return null;
+                }
+                else {
+                  return obtenerresultadoAll(resultSet, funcion, clase);
+                }
+              });
     }
-    catch (Exception ex) {
-      ex.printStackTrace();
-      LogCC.logDegug(ex);
-      LogCC.log("Fallo en ejecutaFuncionAll");
+    catch (Exception e) {
+      LogCC.log("Fallo en ejecutaFuncionAll2");
+      LogCC.log(e.getMessage());
     }
-
-    return resultado;
+    return resultados;
   }
 
-  public Object ejecutaFuncion(String nombreFuncion, final ArrayList<Object> parametros, final Class<?> clase) {
+  public Object ejecutaFuncion(String nombreFuncion, final List<Object> parametros, final Class<?> clase) {
     FuncionesSistema funcionesSistema = FuncionesSistema.getInstance();
     Object resultado = new Object();
     final Funcion funcion = funcionesSistema.obtenerFuncion(nombreFuncion);
-    String msgFuncion = "CALL " + funcion.getSchema() + "." + funcion.getNombreFuncion().split("\\(")[0] + "("
-            + Arrays.toString(parametros.toArray()) + ")";
+    String msgFuncion = "CALL " + funcion.getSchema() + "." + funcion.getNombreFuncion().split("\\(")[0] + "(" +
+            Arrays.toString(parametros.toArray()) + ")";
     Cronometro cronometro = new Cronometro(true, msgFuncion);
     try {
       resultado = jdbcTemplate.execute(con -> {
-        CallableStatement callableStatement = con
-                .prepareCall("{? = call " + funcion.getSchema() + "." + funcion.getNombreFuncion() + "}");
+        CallableStatement callableStatement = con.prepareCall("{? = call " + funcion.getSchema() + "." +
+                funcion.getNombreFuncion() + "}");
         return cargaParametros(callableStatement, parametros);
 
       }, (CallableStatementCallback<Object>) cs -> {
@@ -91,21 +87,22 @@ public class ResultadoBD {
         cs.execute();
         ResultSet resultSet = (ResultSet) cs.getObject(1);
         cronometro.stop();
-        return obtenerresultado(resultSet, funcion, clase);
-
+        if (resultSet == null) {
+          return null;
+        }
+        else {
+          return obtenerresultado(resultSet, funcion, clase);
+        }
       });
-
     }
     catch (Exception e) {
-      LogCC.logDegug(e);
       LogCC.log("Fallo en ejecutaFuncion");
+      LogCC.log(e.getMessage());
     }
-
     return resultado;
   }
 
-  public CallableStatement cargaParametros(CallableStatement callableStatement,
-                                           List<Object> parametros) {
+  public CallableStatement cargaParametros(CallableStatement callableStatement, List<Object> parametros) {
     int posicion = 2;
     try {
       callableStatement.registerOutParameter(1, -10);
@@ -121,7 +118,7 @@ public class ResultadoBD {
     return callableStatement;
   }
 
-  private List<Object> obtenerresultadoAll(ResultSet resultSet, Funcion funcion, Class<?> clase) {
+  public List<Object> obtenerresultadoAll(ResultSet resultSet, Funcion funcion, Class<?> clase) {
     List<Object> resultado = new ArrayList<>();
     Map<String, Method> metodos;
     try {
@@ -133,6 +130,7 @@ public class ResultadoBD {
       }
     }
     catch (SQLException | InstantiationException | IllegalAccessException e) {
+      e.printStackTrace();
       LogCC.logDegug(e);
       LogCC.log("Ocurrio un problema al obtener el resulatdo.REF_1");
     }
@@ -146,7 +144,7 @@ public class ResultadoBD {
 
   private Object obtenerresultado(ResultSet resultSet, Funcion funcion, Class<?> clase) {
     Object objeto = null;
-    Map<String, Method> metodos = new HashMap<>();
+    Map<String, Method> metodos;
     try {
       objeto = clase.newInstance();
       metodos = cargaMetodos(clase);
@@ -221,10 +219,11 @@ public class ResultadoBD {
         LogCC.log("Ocurrio un problema setValores.REF_3");
       }
       catch (Exception e2) {
-        e2.printStackTrace();
         LogCC.logDegug(e2);
         LogCC.log("Ocurrio un problema setValores.REF_4");
       }
     });
   }
+
+
 }
